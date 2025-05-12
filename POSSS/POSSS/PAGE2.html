@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern POS System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="pos-container">
+        <!-- Header Section -->
+        <header class="pos-header">
+            <div class="logo">
+                <h1>McDonalds
+                </h1>
+            </div>
+            <div class="header-controls">
+                
+                <button class="btn-secondary" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="pos-main">
+            <!-- Products Grid -->
+            <section class="products-section">
+                <div class="products-header">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search products...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="category-filter">
+                        <select>
+                            <option value="all">All Categories</option>
+                            <option value="food">Food</option>
+                            <option value="snacks">Snacks</option>
+                            <option value="beverages">Beverages</option>
+                            <option value="desserts">Desserts</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="products-grid">
+                    <!-- Sample Products -->
+                    <div class="product-card">
+                        <img src="BURGER.png" alt="Product">
+                        <h3>Burger</h3>
+                        <p class="price">₱182</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="1pc-Chicken-McDo-with-Rice.webp" alt="Product">
+                        <h3>1pc Chicken McDo with Rice</h3>
+                        <p class="price">₱92</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Mcspaghetti-Solo.webp" alt="Product">
+                        <h3>Spaghetti</h3>
+                        <p class="price">₱122</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="images.jpg" alt="Product">
+                        <h3>Chicken Fillet Ala King</h3>
+                        <p class="price">₱89</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+
+                    <div class="product-card">
+                        <img src="Large-Fries-Mcdo.jpg" alt="Product">
+                        <h3>Fries</h3>
+                        <p class="price">₱109</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Apple-Pie.webp" alt="Product">
+                        <h3>Apple Pie</h3>
+                        <p class="price">₱45</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Coke-1.webp" alt="Product">
+                        <h3>Coke</h3>
+                        <p class="price">₱77</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Coke-McFloat.webp" alt="Product">
+                        <h3>Coke Mc Float</h3>
+                        <p class="price">₱59</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Vanilla-Sundae-Cone.webp" alt="Product">
+                        <h3>Vanilla Sundae Cone</h3>
+                        <p class="price">₱20</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <!-- Add more product cards as needed -->
+                </div>
+            </section>
+
+            <!-- Cart Section -->
+            <section class="cart-section">
+                <div class="cart-header">
+                    <h2>Current Order</h2>
+                   
+                </div>
+                <div class="cart-items">
+                    <!-- Cart items will be dynamically added here -->
+                    <div class="cart-item">
+                        <span class="item-name">Sample Item</span>
+                        <div class="item-quantity">
+                            <button class="btn-quantity">-</button>
+                            <span>1</span>
+                            <button class="btn-quantity">+</button>
+                        </div>
+                        <span class="item-price">$9.99</span>
+                        <button class="btn-remove"><i class="fas fa-times"></i></button>
+                    </div>
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$9.99</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (10%):</span>
+                        <span>$1.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>$10.99</span>
+                    </div>
+                </div>
+                <div class="payment-buttons">
+                    <button class="btn-payment cash">Cash</button>
+                    <button class="btn-payment card">Card</button>
+                    <button class="btn-payment mobile">Mobile Pay</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="pos-footer">
+            <div class="footer-info">
+                <span>Transaction #: </span>
+                <span>Staff: Rodge</span>
+                <span>Date: <span id="current-date"></span></span>
+            </div>
+        </footer>
+    </div>
+
+    <style>
+    .stock-info {
+        color: #666;
+        font-size: 0.9em;
+        margin: 5px 0;
+    }
+    .out-of-stock {
+        color: red;
+    }
+    .low-stock {
+        color: orange;
+    }
+    </style>
+
+    <script>
+        // Check authentication
+        window.onload = function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString();
+            loadInventory();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Load inventory from localStorage
+        let inventory = [];
+        function loadInventory() {
+            inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            updateProductAvailability();
+        }
+
+        function updateProductAvailability() {
+            document.querySelectorAll('.product-card').forEach((card, index) => {
+                const productName = card.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                const addButton = card.querySelector('.btn-add');
+                
+                if (inventoryItem && inventoryItem.quantity > 0) {
+                    addButton.disabled = false;
+                    addButton.textContent = 'Add to Cart';
+                } else {
+                    addButton.disabled = true;
+                    addButton.textContent = 'Out of Stock';
+                }
+            });
+        }
+
+        // Cart state
+        let cart = [];
+        let currentTransactionId = generateTransactionId();
+
+        // Generate random transaction ID
+        function generateTransactionId() {
+            return 'TRX' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Add event listeners to all "Add to Cart" buttons
+        document.querySelectorAll('.btn-add').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                const productCard = button.closest('.product-card');
+                const productName = productCard.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                
+                if (inventoryItem && inventoryItem.quantity > 0) {
+                    addToCart(inventoryItem);
+                } else {
+                    alert('Sorry, this item is out of stock!');
+                }
+            });
+        });
+
+        // Add item to cart
+        function addToCart(item) {
+            const existingItem = cart.find(cartItem => cartItem.id === item.id);
+            if (existingItem) {
+                if (item.quantity >= existingItem.quantity + 1) {
+                    existingItem.quantity += 1;
+                } else {
+                    alert('Sorry, not enough stock available!');
+                    return;
+                }
+            } else {
+                if (item.quantity >= 1) {
+                    cart.push({ ...item, quantity: 1 });
+                } else {
+                    alert('Sorry, this item is out of stock!');
+                    return;
+                }
+            }
+            updateCartDisplay();
+        }
+
+        // Update cart display
+        function updateCartDisplay() {
+            const cartItemsContainer = document.querySelector('.cart-items');
+            cartItemsContainer.innerHTML = '';
+
+            cart.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <span class="item-name">${item.name}</span>
+                    <div class="item-quantity">
+                        <button class="btn-quantity" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                        <span>${item.quantity}</span>
+                        <button class="btn-quantity" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                    </div>
+                    <span class="item-price">₱${(item.price * item.quantity).toFixed(2)}</span>
+                    <button class="btn-remove" onclick="removeItem(${item.id})"><i class="fas fa-times"></i></button>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+
+            updateCartSummary();
+        }
+
+        // Update item quantity
+        function updateQuantity(itemId, newQuantity) {
+            if (newQuantity <= 0) {
+                removeItem(itemId);
+                return;
+            }
+
+            const cartItem = cart.find(item => item.id === itemId);
+            const inventoryItem = inventory.find(item => item.id === itemId);
+
+            if (cartItem && inventoryItem && inventoryItem.quantity >= newQuantity) {
+                cartItem.quantity = newQuantity;
+                updateCartDisplay();
+            } else {
+                alert('Sorry, not enough stock available!');
+            }
+        }
+
+        // Remove item from cart
+        function removeItem(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCartDisplay();
+        }
+
+        // Update cart summary
+        function updateCartSummary() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const tax = subtotal * 0.12; // 12% VAT
+            const total = subtotal + tax;
+
+            document.querySelector('.summary-row:nth-child(1) span:last-child').textContent = `₱${subtotal.toFixed(2)}`;
+            document.querySelector('.summary-row:nth-child(2) span:last-child').textContent = `₱${tax.toFixed(2)}`;
+            document.querySelector('.summary-row.total span:last-child').textContent = `₱${total.toFixed(2)}`;
+        }
+
+        // Handle payments
+        document.querySelectorAll('.btn-payment').forEach(button => {
+            button.addEventListener('click', (e) => {
+                if (cart.length === 0) {
+                    alert('Please add items to cart before proceeding to payment.');
+                    return;
+                }
+
+                const paymentMethod = e.target.classList.contains('cash') ? 'Cash' :
+                                    e.target.classList.contains('card') ? 'Card' : 'Mobile Pay';
+
+                if (paymentMethod === 'Cash') {
+                    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const tax = subtotal * 0.12;
+                    const total = subtotal + tax;
+                    const receipt = generateReceipt(subtotal, tax, total, paymentMethod);
+                    
+                    // Save order to localStorage
+                    const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                    const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+                    const order = {
+                        transactionId: currentTransactionId,
+                        staff: currentUser.username,
+                        date: new Date().toISOString(),
+                        items: cart.map(item => ({
+                            id: item.id,
+                            name: item.name,
+                            quantity: item.quantity,
+                            price: item.price
+                        })),
+                        subtotal: subtotal,
+                        tax: tax,
+                        total: total,
+                        paymentMethod: paymentMethod
+                    };
+                    orders.push(order);
+                    localStorage.setItem('orders', JSON.stringify(orders));
+
+                    // Update inventory
+                    updateInventory();
+                    alert(receipt);
+                } else {
+                    alert(`Processing ${paymentMethod} payment...\nPlease follow the payment terminal instructions.`);
+                    updateInventory();
+                }
+
+                // Reset cart after payment
+                cart = [];
+                currentTransactionId = generateTransactionId();
+                updateCartDisplay();
+            });
+        });
+
+        // Update inventory in localStorage
+        function updateInventory() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            let insufficientStock = false;
+
+            // First check if we have enough stock for all items
+            cart.forEach(cartItem => {
+                const inventoryItem = inventory.find(item => item.id === cartItem.id);
+                if (inventoryItem && inventoryItem.quantity < cartItem.quantity) {
+                    insufficientStock = true;
+                    alert(`Sorry, insufficient stock for ${cartItem.name}. Available: ${inventoryItem.quantity}`);
+                }
+            });
+
+            if (insufficientStock) {
+                return false;
+            }
+
+            // If we have enough stock, proceed with the update
+            cart.forEach(cartItem => {
+                const inventoryItem = inventory.find(item => item.id === cartItem.id);
+                if (inventoryItem) {
+                    inventoryItem.quantity -= cartItem.quantity;
+                }
+            });
+
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+            updateStockDisplay();
+            return true;
+        }
+
+        // Generate receipt
+        function generateReceipt(subtotal, tax, total, paymentMethod) {
+            const date = new Date().toLocaleString();
+            const currentUser = JSON.parse(sessionStorage.getItem('currentUser'));
+            let receipt = `
+=== McDonalds Receipt ===
+Transaction ID: ${currentTransactionId}
+Date: ${date}
+Staff: ${currentUser.username}
+
+Items:
+`;
+            cart.forEach(item => {
+                receipt += `${item.name} x${item.quantity}: ₱${(item.price * item.quantity).toFixed(2)}\n`;
+            });
+
+            receipt += `
+Subtotal: ₱${subtotal.toFixed(2)}
+VAT (12%): ₱${tax.toFixed(2)}
+Total: ₱${total.toFixed(2)}
+
+Payment Method: ${paymentMethod}
+
+Thank you for dining at McDonalds!
+========================
+`;
+            return receipt;
+        }
+
+        // Initialize search functionality
+        document.querySelector('.search-bar input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.product-card').forEach((card) => {
+                const productName = card.querySelector('h3').textContent.toLowerCase();
+                card.style.display = productName.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // Initialize category filter
+        document.querySelector('.category-filter select').addEventListener('change', (e) => {
+            const category = e.target.value.toLowerCase();
+            if (category === 'all') {
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productName = card.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                const shouldShow = inventoryItem && inventoryItem.category.toLowerCase() === category;
+                card.style.display = shouldShow ? 'block' : 'none';
+            });
+        });
+
+        // Update the stock display for all products
+        function updateStockDisplay() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productName = card.querySelector('h3').textContent;
+                const stockSpan = card.querySelector('.stock-count');
+                const addButton = card.querySelector('.btn-add');
+                
+                const item = inventory.find(i => i.name === productName);
+                if (item) {
+                    stockSpan.textContent = item.quantity;
+                    if (item.quantity === 0) {
+                        stockSpan.className = 'stock-count out-of-stock';
+                        addButton.disabled = true;
+                        addButton.textContent = 'Out of Stock';
+                    } else if (item.quantity < 10) {
+                        stockSpan.className = 'stock-count low-stock';
+                        addButton.disabled = false;
+                        addButton.textContent = 'Add to Cart (Low Stock)';
+                    } else {
+                        stockSpan.className = 'stock-count';
+                        addButton.disabled = false;
+                        addButton.textContent = 'Add to Cart';
+                    }
+                } else {
+                    stockSpan.textContent = 'N/A';
+                    stockSpan.className = 'stock-count out-of-stock';
+                    addButton.disabled = true;
+                    addButton.textContent = 'Unavailable';
+                }
+            });
+        }
+
+        // Set up periodic stock refresh
+        setInterval(updateStockDisplay, 5000); // Refresh every 5 seconds
+
+        // Call updateStockDisplay when the page loads and after each cart operation
+        window.addEventListener('load', () => {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(currentUser);
+            document.getElementById('staff-name').textContent = user.username;
+            updateStockDisplay();
+        });
+    </script>
+</body>
+</html> 

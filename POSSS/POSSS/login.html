@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Staff Login - McDonalds POS</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .login-container {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .form-group label {
+      font-weight: bold;
+    }
+    .form-group input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .login-btn {
+      background-color: #ff0000;
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .login-btn:hover {
+      background-color: #cc0000;
+    }
+    .error-message {
+      color: red;
+      text-align: center;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h1>McDonalds Staff Login</h1>
+    </div>
+    <div id="error-message" class="error-message"></div>
+    <form class="login-form" onsubmit="return handleLogin(event)">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required>
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+  </div>
+
+  <script>
+    // Initialize default inventory if not exists
+    if (!localStorage.getItem('inventory')) {
+      const defaultInventory = [
+        { id: 1, name: 'Burger', category: 'food', quantity: 50, price: 182 },
+        { id: 2, name: '1pc Chicken McDo with Rice', category: 'food', quantity: 45, price: 92 },
+        { id: 3, name: 'Spaghetti', category: 'food', quantity: 40, price: 122 },
+        { id: 4, name: 'Chicken Fillet Ala King', category: 'food', quantity: 35, price: 89 },
+        { id: 5, name: 'Fries', category: 'snacks', quantity: 100, price: 109 },
+        { id: 6, name: 'Apple Pie', category: 'snacks', quantity: 45, price: 45 },
+        { id: 7, name: 'Coke', category: 'beverages', quantity: 200, price: 77 },
+        { id: 8, name: 'Coke Mc Float', category: 'beverages', quantity: 80, price: 59 },
+        { id: 9, name: 'Vanilla Sundae Cone', category: 'desserts', quantity: 60, price: 20 }
+      ];
+      localStorage.setItem('inventory', JSON.stringify(defaultInventory));
+    }
+
+    // Staff credentials (in real application, this should be server-side)
+    const users = [
+      { username: 'admin', password: 'admin123', role: 'admin' },
+      { username: 'staff', password: 'staff123', role: 'staff' }
+    ];
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error-message');
+
+      const user = users.find(u => u.username === username && u.password === password);
+      
+      if (user) {
+        // Store user info in sessionStorage
+        sessionStorage.setItem('currentUser', JSON.stringify({
+          username: user.username,
+          role: user.role
+        }));
+        
+        // Redirect based on role
+        if (user.role === 'admin') {
+          window.location.href = 'Admin.html';
+        } else {
+          window.location.href = 'PAGE2.html';
+        }
+      } else {
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'Invalid username or password';
+      }
+      return false;
+    }
+
+    // Check if user is already logged in
+    window.onload = function() {
+      const currentUser = sessionStorage.getItem('currentUser');
+      if (currentUser) {
+        const user = JSON.parse(currentUser);
+        if (user.role === 'admin') {
+          window.location.href = 'Admin.html';
+        } else {
+          window.location.href = 'PAGE2.html';
+        }
+      }
+    }
+  </script>
+</body>
+</html>

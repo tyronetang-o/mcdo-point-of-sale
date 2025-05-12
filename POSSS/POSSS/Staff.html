@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="pos-container">
+        <!-- Header -->
+        <header class="pos-header">
+            <div class="logo">
+                <h1>McDonalds Staff Dashboard</h1>
+            </div>
+            <div class="header-controls">
+                <span class="user-info">
+                    <i class="fas fa-user"></i> Staff
+                </span>
+                <button class="btn-secondary" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="pos-main">
+            <!-- Inventory Section -->
+            <section class="products-section">
+                <div class="products-header">
+                    <h2>Inventory Management</h2>
+                </div>
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Burger</td>
+                            <td>Food</td>
+                            <td>50</td>
+                            <td>$5.99</td>
+                        </tr>
+                        <tr>
+                            <td>Fries</td>
+                            <td>Snacks</td>
+                            <td>100</td>
+                            <td>$2.99</td>
+                        </tr>
+                        <tr>
+                            <td>Soft Drink</td>
+                            <td>Beverages</td>
+                            <td>200</td>
+                            <td>$1.50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="pos-footer">
+            <div class="footer-info">
+                <span>Staff: Rodge</span>
+                <span>Date: <span id="current-date"></span></span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Display current date
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString();
+
+        // Simulate logout
+        function logout() {
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

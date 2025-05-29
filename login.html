@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>McDonalds</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('bricks.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+    }
+    .login-container {
+      max-width: 400px;
+      width: 90%;
+      margin: 20px;
+      padding: 30px;
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(5px);
+    }
+    .login-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .logo img {
+      height: 60px;
+      width: auto;
+    }
+    .logo h1 {
+      color: #DA291C;
+      font-size: 1.8em;
+      margin: 0;
+      font-weight: bold;
+    }
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-group label {
+      font-weight: bold;
+      color: #333;
+    }
+    .form-group input {
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #DA291C;
+      box-shadow: 0 0 0 2px rgba(218, 41, 28, 0.1);
+    }
+    .login-btn {
+      background-color: #DA291C;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.1em;
+      transition: background-color 0.3s;
+    }
+    .login-btn:hover {
+      background-color: #B71C1C;
+    }
+    .error-message {
+      color: #DA291C;
+      text-align: center;
+      display: none;
+      margin-bottom: 15px;
+      padding: 10px;
+      background-color: #FFEBEE;
+      border-radius: 4px;
+    }
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+    .login-link a {
+      color: #DA291C;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">
+        <img src="mcdonalds-logo.png" alt="McDonald's Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'">
+        <h1>McDonald's</h1>
+      </div>
+      <h2>Login</h2>
+    </div>
+    <div id="error-message" class="error-message"></div>
+    <form class="login-form" onsubmit="return handleLogin(event)">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" required placeholder="Enter your username">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" required placeholder="Enter your password">
+      </div>
+      <button type="submit" class="login-btn">Login</button>
+    </form>
+    <div class="login-link">
+      Don't have an account? <a href="register.html">Register here</a>
+    </div>
+  </div>
+
+  <script>
+    // Initialize default inventory if not exists
+    if (!localStorage.getItem('inventory')) {
+      const defaultInventory = [
+        { id: 1, name: 'Burger', category: 'food', quantity: 50, price: 182 },
+        { id: 2, name: '1pc Chicken McDo with Rice', category: 'food', quantity: 45, price: 92 },
+        { id: 3, name: 'Spaghetti', category: 'food', quantity: 40, price: 122 },
+        { id: 4, name: 'Chicken Fillet Ala King', category: 'food', quantity: 35, price: 89 },
+        { id: 5, name: 'Fries', category: 'snacks', quantity: 100, price: 109 },
+        { id: 6, name: 'Apple Pie', category: 'snacks', quantity: 45, price: 45 },
+        { id: 7, name: 'Coke', category: 'beverages', quantity: 200, price: 77 },
+        { id: 8, name: 'Coke Mc Float', category: 'beverages', quantity: 80, price: 59 },
+        { id: 9, name: 'Vanilla Sundae Cone', category: 'desserts', quantity: 60, price: 20 }
+      ];
+      localStorage.setItem('inventory', JSON.stringify(defaultInventory));
+    }
+
+    // Check if user is already logged in
+    window.onload = function() {
+      const currentUser = sessionStorage.getItem('currentUser');
+      if (currentUser) {
+        const user = JSON.parse(currentUser);
+        window.location.href = user.role === 'admin' ? 'admin.html' : 'PAGE2.html';
+      }
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const errorMessage = document.getElementById('error-message');
+
+      // Get users from localStorage
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      
+      // Find user
+      const user = users.find(u => u.username === username && u.password === password);
+
+      if (user) {
+        // Store user info in session storage (excluding password)
+        const { password: _, ...userInfo } = user;
+        sessionStorage.setItem('currentUser', JSON.stringify(userInfo));
+        
+        // Redirect based on role
+        window.location.href = user.role === 'admin' ? 'admin.html' : 'PAGE2.html';
+      } else {
+        errorMessage.style.display = 'block';
+        errorMessage.textContent = 'Invalid username or password';
+      }
+      return false;
+    }
+  </script>
+</body>
+</html>

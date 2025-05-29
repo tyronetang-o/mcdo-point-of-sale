@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>McDonalds - Registration</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('bricks.jpeg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: Arial, sans-serif;
+        }
+        .register-container {
+            max-width: 500px;
+            width: 90%;
+            margin: 20px;
+            padding: 30px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .logo img {
+            height: 60px;
+            width: auto;
+        }
+        .logo h1 {
+            color: #DA291C;
+            font-size: 1.8em;
+            margin: 0;
+            font-weight: bold;
+        }
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #DA291C;
+            box-shadow: 0 0 0 2px rgba(218, 41, 28, 0.1);
+        }
+        .admin-code-section {
+            display: none;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+        }
+        .admin-code-section.show {
+            display: block;
+        }
+        .admin-code-section p {
+            margin: 0 0 10px 0;
+            color: #666;
+            font-size: 0.9em;
+        }
+        .register-btn {
+            background-color: #DA291C;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: background-color 0.3s;
+        }
+        .register-btn:hover {
+            background-color: #B71C1C;
+        }
+        .error-message {
+            color: #DA291C;
+            text-align: center;
+            display: none;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #FFEBEE;
+            border-radius: 4px;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        .login-link a {
+            color: #DA291C;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="register-header">
+            <div class="logo">
+                <img src="mcdonalds-logo.png" alt="McDonald's Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'">
+                <h1>McDonald's</h1>
+            </div>
+            <h2>Create Account</h2>
+        </div>
+        <div id="error-message" class="error-message"></div>
+        <form class="register-form" onsubmit="return handleRegistration(event)">
+            <div class="form-group">
+                <label for="fullname">Full Name</label>
+                <input type="text" id="fullname" required placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required placeholder="Choose a username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required placeholder="Create a password">
+            </div>
+            <div class="form-group">
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" required placeholder="Confirm your password">
+            </div>
+            <div class="form-group">
+                <label for="role">Account Type</label>
+                <select id="role" required onchange="toggleAdminCodeSection()">
+                    <option value="">Select account type</option>
+                    <option value="customer">Customer</option>
+                    <option value="admin">Admin</option>
+                </select>
+                <div id="admin-code-section" class="admin-code-section">
+                    <p>To create an admin account, you need an admin creation code.</p>
+                    <div class="form-group">
+                        <label for="admin-code">Admin Creation Code</label>
+                        <input type="password" id="admin-code" placeholder="Enter admin creation code">
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="register-btn">Create Account</button>
+        </form>
+        <div class="login-link">
+            Already have an account? <a href="login.html">Login here</a>
+        </div>
+    </div>
+
+    <script>
+        // Admin creation code - this should be stored securely in a real application
+        const ADMIN_CREATION_CODE = "mcdo";
+
+        // Check if user is already logged in
+        window.onload = function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (currentUser) {
+                const user = JSON.parse(currentUser);
+                window.location.href = user.role === 'admin' ? 'admin.html' : 'PAGE2.html';
+            }
+
+            // Initialize users array if it doesn't exist
+            if (!localStorage.getItem('users')) {
+                localStorage.setItem('users', JSON.stringify([]));
+            }
+
+            // Check if there are any existing admin users
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const hasAdmin = users.some(user => user.role === 'admin');
+            
+            // If no admin exists, automatically select admin role and show admin code section
+            if (!hasAdmin) {
+                document.getElementById('role').value = 'admin';
+                document.getElementById('admin-code-section').classList.add('show');
+                // Make admin code optional for first admin
+                document.getElementById('admin-code').required = false;
+            } else {
+                // Make admin code required for subsequent admins
+                document.getElementById('admin-code').required = true;
+            }
+        }
+
+        function toggleAdminCodeSection() {
+            const role = document.getElementById('role').value;
+            const adminCodeSection = document.getElementById('admin-code-section');
+            const adminCodeInput = document.getElementById('admin-code');
+            
+            if (role === 'admin') {
+                adminCodeSection.classList.add('show');
+                // Check if there's an existing admin to determine if code is required
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const hasAdmin = users.some(user => user.role === 'admin');
+                adminCodeInput.required = hasAdmin;
+            } else {
+                adminCodeSection.classList.remove('show');
+                adminCodeInput.required = false;
+            }
+        }
+
+        function handleRegistration(event) {
+            event.preventDefault();
+            const fullname = document.getElementById('fullname').value.trim();
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            const role = document.getElementById('role').value;
+            const adminCode = document.getElementById('admin-code').value;
+            const errorMessage = document.getElementById('error-message');
+
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Passwords do not match';
+                return false;
+            }
+
+            // Validate password strength (minimum 6 characters)
+            if (password.length < 6) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Password must be at least 6 characters long';
+                return false;
+            }
+
+            // Get existing users or initialize empty array
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+
+            // Check if username already exists
+            if (users.some(user => user.username === username)) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = 'Username already exists';
+                return false;
+            }
+
+            // Validate admin role creation
+            if (role === 'admin') {
+                const hasAdmin = users.some(user => user.role === 'admin');
+                
+                // If admin already exists, require admin code
+                if (hasAdmin) {
+                    if (!adminCode || adminCode !== ADMIN_CREATION_CODE) {
+                        errorMessage.style.display = 'block';
+                        errorMessage.textContent = 'Invalid admin creation code';
+                        return false;
+                    }
+                }
+            }
+
+            // Add new user
+            const newUser = {
+                fullname,
+                username,
+                password,
+                role,
+                createdBy: users.some(user => user.role === 'admin') ? 
+                    JSON.parse(sessionStorage.getItem('currentUser'))?.username : 'system'
+            };
+
+            // Add to users array
+            users.push(newUser);
+
+            // Save updated users array
+            localStorage.setItem('users', JSON.stringify(users));
+
+            // Show success message and redirect to login
+            alert('Registration successful! Please login with your new account.');
+            window.location.href = 'login.html';
+            return false;
+        }
+    </script>
+</body>
+</html> 

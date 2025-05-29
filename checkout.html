@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - McDonalds POS</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .checkout-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .order-summary, .payment-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .order-items {
+            margin: 20px 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .payment-method {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method:hover {
+            border-color: #4CAF50;
+        }
+
+        .payment-method.selected {
+            border-color: #4CAF50;
+            background-color: #f0f9f0;
+        }
+
+        .payment-method i {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .total-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+
+        .total-row.final {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-pay {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-pay:hover {
+            background-color: #45a049;
+        }
+
+        .btn-pay:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        #cash-input-section {
+            display: none;
+            margin-top: 15px;
+        }
+
+        #cash-input-section input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .change-amount {
+            font-size: 1.2em;
+            color: #4CAF50;
+            margin-top: 10px;
+        }
+
+        /* Add new styles for address and tip sections */
+        .delivery-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .address-form {
+            display: grid;
+            gap: 15px;
+        }
+
+        .address-form input, .address-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .address-form textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .tip-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .tip-option {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tip-option:hover {
+            border-color: #4CAF50;
+        }
+
+        .tip-option.selected {
+            border-color: #4CAF50;
+            background-color: #f0f9f0;
+        }
+
+        .custom-tip {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .custom-tip input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .section-title i {
+            color: #4CAF50;
+        }
+
+        /* Add QR code modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .qr-code-container {
+            margin: 20px 0;
+        }
+
+        .qr-code-container img {
+            max-width: 200px;
+            height: auto;
+        }
+
+        .payment-method-selector {
+            margin: 15px 0;
+        }
+
+        .payment-method-selector select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .close-modal {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        /* Add receipt modal styles */
+        .receipt-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .receipt-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .receipt-text {
+            white-space: pre-line;
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 20px 0;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .receipt-actions button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-print {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-done {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-print:hover {
+            background-color: #45a049;
+        }
+
+        .btn-done:hover {
+            background-color: #5a6268;
+        }
+
+        /* Add styles for group meals in checkout */
+        .group-meal {
+            border-left: 2px solid #eee;
+            padding-left: 10px;
+            margin: 5px 0;
+        }
+        
+        .main-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .add-ons-list {
+            margin-left: 15px;
+        }
+        
+        .add-on-item {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            font-size: 0.9em;
+            margin: 3px 0;
+        }
+
+        /* Add styles for the header logo */
+        .pos-header .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pos-header .logo img {
+            height: 40px;
+            width: auto;
+        }
+
+        .pos-header .logo h1 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #DA291C;
+        }
+    </style>
+</head>
+<body>
+    <div class="pos-container">
+        <!-- Header -->
+        <header class="pos-header">
+            <div class="logo">
+                <img src="mcdonalds-logo.png" alt="McDonald's Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'" style="height: 40px; width: auto; margin-right: 10px;">
+                <h1>McDonalds Checkout</h1>
+            </div>
+            <div class="header-controls">
+                <span class="user-info">
+                    <i class="fas fa-user"></i> <span id="staff-name"></span>
+                </span>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="checkout-container">
+            <!-- Order Summary Section -->
+            <div class="order-summary">
+                <h2>Order Summary</h2>
+                <div class="order-items" id="order-items">
+                    <!-- Items will be populated by JavaScript -->
+                </div>
+                <div class="total-section">
+                    <div class="total-row">
+                        <span>Subtotal:</span>
+                        <span id="subtotal">₱0.00</span>
+                    </div>
+                    <div class="total-row">
+                        <span>VAT (12%):</span>
+                        <span id="tax">₱0.00</span>
+                    </div>
+                    <div class="total-row final">
+                        <span>Total:</span>
+                        <span id="total">₱0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <!-- New Delivery Address Section -->
+                <div class="delivery-section">
+                    <div class="section-title">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <h2>Delivery Address</h2>
+                    </div>
+                    <div class="address-form">
+                        <input type="text" id="customer-name" placeholder="Customer Name" required>
+                        <input type="tel" id="phone-number" placeholder="Contact Number" required>
+                        <textarea id="delivery-address" placeholder="Complete Delivery Address (House/Unit No., Street, Barangay, City)" required></textarea>
+                        <input type="text" id="landmark" placeholder="Landmark (Optional)">
+                    </div>
+                </div>
+
+                <!-- New Rider Tip Section -->
+                <div class="delivery-section">
+                    <div class="section-title">
+                        <i class="fas fa-hand-holding-heart"></i>
+                        <h2>Rider Tip</h2>
+                    </div>
+                    <div class="tip-options">
+                        <div class="tip-option" onclick="selectTip(0)">None</div>
+                        <div class="tip-option" onclick="selectTip(20)">₱20</div>
+                        <div class="tip-option" onclick="selectTip(30)">₱30</div>
+                        <div class="tip-option" onclick="selectTip(50)">₱50</div>
+                        <div class="tip-option" onclick="selectTip('custom')">Custom</div>
+                    </div>
+                    <div class="custom-tip" id="custom-tip-input">
+                        <input type="number" placeholder="Enter custom tip amount" min="0" step="1" onchange="updateCustomTip(this.value)">
+                    </div>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="payment-section">
+                    <h2>Payment Method</h2>
+                    <div class="payment-methods">
+                        <div class="payment-method" onclick="selectPaymentMethod('cash')">
+                            <i class="fas fa-truck"></i>
+                            <div>Cash</div>
+                        </div>
+                        <div class="payment-method" onclick="selectPaymentMethod('online')">
+                            <i class="fas fa-qrcode"></i>
+                            <div>Pay Online</div>
+                        </div>
+                    </div>
+
+                    <div id="cash-input-section">
+                        <input type="number" id="cash-amount" placeholder="Enter cash amount" step="0.01" onkeyup="calculateChange()">
+                        <div class="change-amount" id="change-display"></div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-back" onclick="goBack()">Back</button>
+                        <button class="btn-pay" id="btn-pay" disabled onclick="processPayment()">Pay Now</button>
+                    </div>
+                </div>
+
+                <!-- QR Code Modal -->
+                <div id="qr-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close-modal" onclick="closeQRModal()">&times;</span>
+                        <h2>Online Payment</h2>
+                        <div class="payment-method-selector">
+                            <select id="online-payment-method" onchange="generateQRCode()">
+                                <option value="">Select Payment Method</option>
+                                <option value="gcash">GCash</option>
+                                <option value="maya">Maya</option>
+                            </select>
+                        </div>
+                        <div class="qr-code-container" id="qr-code">
+                            <!-- QR code will be generated here -->
+                        </div>
+                        <p>Total Amount: <strong>₱<span id="qr-amount">0.00</span></strong></p>
+                        <p>Scan the QR code using your payment app</p>
+                        <div class="modal-buttons" style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                            <button class="btn-cancel" onclick="closeQRModal()" style="background-color: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                                Cancel
+                            </button>
+                            <button class="btn-pay" onclick="confirmOnlinePayment()" style="background-color: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                                I've Completed the Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Receipt Modal -->
+                <div id="receipt-modal" class="receipt-modal">
+                    <div class="receipt-content">
+                        <span class="close-modal" onclick="closeReceiptModal()">&times;</span>
+                        <div class="receipt-text" id="receipt-text"></div>
+                        <div class="receipt-actions">
+                            <button class="btn-print" onclick="printReceipt()">
+                                <i class="fas fa-print"></i> Print Receipt
+                            </button>
+                            <button class="btn-done" onclick="closeReceiptModal()">Done</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentCart;
+        let selectedPaymentMethod = '';
+        let total = 0;
+        let selectedTip = 0;
+        let qrCodeDisplayed = false;
+
+        window.onload = function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('staff-name').textContent = JSON.parse(currentUser).username;
+
+            // Load cart data
+            const cartData = sessionStorage.getItem('currentCart');
+            if (!cartData) {
+                window.location.href = 'PAGE2.html';
+                return;
+            }
+            currentCart = JSON.parse(cartData);
+            displayOrderSummary();
+
+            // Hide delivery address and rider tip sections if delivery option is "pickup"
+            if (currentCart.deliveryOption === "pickup") {
+                document.querySelectorAll(".delivery-section").forEach(section => { section.style.display = "none"; });
+            } else {
+                document.querySelectorAll(".delivery-section").forEach(section => { section.style.display = "block"; });
+                // Select "None" tip option by default
+                document.querySelector('.tip-option').click();
+            }
+        }
+
+        function displayOrderSummary() {
+            const orderItems = document.getElementById('order-items');
+            orderItems.innerHTML = '';
+
+            currentCart.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'order-item';
+                
+                if (item.isGroupMeal) {
+                    // Create group meal display
+                    let groupMealHTML = `
+                        <div class="group-meal">
+                            <div class="main-item">
+                                <span>${item.name} x${item.quantity}</span>
+                                <span>₱${(item.price * item.quantity).toFixed(2)}</span>
+                            </div>`;
+                    
+                    if (item.addOns && item.addOns.length > 0) {
+                        groupMealHTML += '<div class="add-ons-list">';
+                        item.addOns.forEach(addOn => {
+                            groupMealHTML += `
+                                <div class="add-on-item">
+                                    <span>+ ${addOn.name}</span>
+                                    <span>₱${addOn.price.toFixed(2)}</span>
+                                </div>`;
+                        });
+                        groupMealHTML += '</div>';
+                    }
+                    
+                    groupMealHTML += '</div>';
+                    itemElement.innerHTML = groupMealHTML;
+                } else {
+                    // Regular item display
+                    itemElement.innerHTML = `
+                        <span>${item.name} x${item.quantity}</span>
+                        <span>₱${(item.price * item.quantity).toFixed(2)}</span>`;
+                }
+                
+                orderItems.appendChild(itemElement);
+            });
+
+            document.getElementById('subtotal').textContent = `₱${currentCart.subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `₱${currentCart.tax.toFixed(2)}`;
+            total = currentCart.subtotal + currentCart.tax;
+            document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
+            
+            // Update total with tip
+            updateTotalWithTip();
+        }
+
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            document.querySelectorAll('.payment-method').forEach(pm => {
+                pm.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            const cashInput = document.getElementById('cash-input-section');
+            cashInput.style.display = method === 'cash' ? 'block' : 'none';
+            
+            const payButton = document.getElementById('btn-pay');
+            payButton.disabled = false;
+            payButton.textContent = `Pay ₱${total.toFixed(2)}`;
+
+            if (method === 'online') {
+                showQRModal();
+            }
+        }
+
+        function calculateChange() {
+            const cashAmount = parseFloat(document.getElementById('cash-amount').value);
+            const changeDisplay = document.getElementById('change-display');
+            
+            if (!isNaN(cashAmount)) {
+                const change = cashAmount - total;
+                if (change >= 0) {
+                    changeDisplay.textContent = `Change: ₱${change.toFixed(2)}`;
+                    document.getElementById('btn-pay').disabled = false;
+                } else {
+                    changeDisplay.textContent = 'Insufficient amount';
+                    document.getElementById('btn-pay').disabled = true;
+                }
+            } else {
+                changeDisplay.textContent = '';
+                document.getElementById('btn-pay').disabled = true;
+            }
+        }
+
+        function selectTip(amount) {
+            document.querySelectorAll('.tip-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            const customTipInput = document.getElementById('custom-tip-input');
+            if (amount === 'custom') {
+                customTipInput.style.display = 'block';
+                event.currentTarget.classList.add('selected');
+            } else {
+                customTipInput.style.display = 'none';
+                event.currentTarget.classList.add('selected');
+                selectedTip = amount;
+                updateTotalWithTip();
+            }
+        }
+
+        function updateCustomTip(value) {
+            selectedTip = parseFloat(value) || 0;
+            updateTotalWithTip();
+        }
+
+        function updateTotalWithTip() {
+            total = currentCart.subtotal + currentCart.tax + selectedTip;
+            document.getElementById('total').textContent = `₱${total.toFixed(2)}`;
+            
+            // Update pay button if payment method is selected
+            const payButton = document.getElementById('btn-pay');
+            if (!payButton.disabled) {
+                payButton.textContent = `Pay ₱${total.toFixed(2)}`;
+            }
+        }
+
+        function showQRModal() {
+            const modal = document.getElementById('qr-modal');
+            modal.style.display = 'flex';
+            document.getElementById('qr-amount').textContent = total.toFixed(2);
+        }
+
+        function closeQRModal() {
+            const modal = document.getElementById('qr-modal');
+            modal.style.display = 'none';
+            // Reset payment method and QR code
+            selectedPaymentMethod = '';
+            qrCodeDisplayed = false;
+            document.querySelectorAll('.payment-method').forEach(pm => {
+                pm.classList.remove('selected');
+            });
+            document.getElementById('btn-pay').disabled = true;
+            document.getElementById('qr-code').innerHTML = '';
+            document.getElementById('online-payment-method').value = '';
+        }
+
+        function generateQRCode() {
+            const method = document.getElementById('online-payment-method').value;
+            if (!method) return;
+
+            const qrContainer = document.getElementById('qr-code');
+            // Generate a simple QR code URL for demonstration
+            // In a real application, you would generate this server-side
+            const qrData = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${method.toUpperCase()}_PAYMENT_${total.toFixed(2)}_${currentCart.transactionId}`;
+            
+            qrContainer.innerHTML = `<img src="${qrData}" alt="Payment QR Code">`;
+            qrCodeDisplayed = true;
+        }
+
+        function confirmOnlinePayment() {
+            const method = document.getElementById('online-payment-method').value;
+            if (!method) {
+                alert('Please select a payment method');
+                return;
+            }
+            
+            if (!qrCodeDisplayed) {
+                alert('Please wait for the QR code to be generated');
+                return;
+            }
+
+            // Close modal and process payment
+            closeQRModal();
+            processPayment();
+        }
+
+        function showReceiptModal(receipt) {
+            const modal = document.getElementById('receipt-modal');
+            const receiptText = document.getElementById('receipt-text');
+            receiptText.textContent = receipt;
+            modal.style.display = 'flex';
+        }
+
+        function closeReceiptModal() {
+            const modal = document.getElementById('receipt-modal');
+            modal.style.display = 'none';
+            // Redirect after closing receipt
+            window.location.href = 'PAGE2.html';
+        }
+
+        function printReceipt() {
+            const receiptText = document.getElementById('receipt-text').textContent;
+            const printWindow = window.open('', '', 'width=600,height=600');
+            printWindow.document.open();
+            printWindow.document.write(`
+                <html>
+                    <head>
+                        <title>Print Receipt</title>
+                        <style>
+                            body {
+                                font-family: 'Courier New', Courier, monospace;
+                                padding: 20px;
+                                line-height: 1.4;
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <pre>${receiptText}</pre>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+            printWindow.close();
+        }
+
+        function processPayment() {
+            // Validate delivery information (only if delivery option is "delivery")
+            if (currentCart.deliveryOption === "delivery") {
+                const customerName = document.getElementById('customer-name').value.trim();
+                const phoneNumber = document.getElementById('phone-number').value.trim();
+                const deliveryAddress = document.getElementById('delivery-address').value.trim();
+                if (!customerName || !phoneNumber || !deliveryAddress) {
+                    alert("Please fill in all required delivery information");
+                    return;
+                }
+            }
+
+            if (selectedPaymentMethod === 'cash') {
+                const cashAmount = parseFloat(document.getElementById('cash-amount').value);
+                if (isNaN(cashAmount) || cashAmount < total) {
+                    alert("Please enter a valid cash amount");
+                    return;
+                }
+            }
+
+            // Save order (with delivery and tip information if delivery option is "delivery")
+            const orders = JSON.parse(localStorage.getItem("orders")) || [];
+            const currentUser = JSON.parse(sessionStorage.getItem("currentUser"));
+            let order = {
+                transactionId: currentCart.transactionId,
+                staff: currentUser.username,
+                date: new Date().toISOString(),
+                items: currentCart.items,
+                subtotal: currentCart.subtotal,
+                tax: currentCart.tax,
+                total: total,
+                paymentMethod: (selectedPaymentMethod === "online") ? (document.getElementById("online-payment-method").value) : ("Cash on Delivery")
+            };
+            if (currentCart.deliveryOption === "delivery") {
+                order.tip = selectedTip;
+                order.delivery = {
+                    customerName: (document.getElementById("customer-name").value.trim()),
+                    phoneNumber: (document.getElementById("phone-number").value.trim()),
+                    address: (document.getElementById("delivery-address").value.trim()),
+                    landmark: (document.getElementById("landmark").value.trim())
+                };
+            }
+            orders.push(order);
+            localStorage.setItem("orders", JSON.stringify(orders));
+
+            // Update inventory
+            const inventory = JSON.parse(localStorage.getItem("inventory")) || [];
+            currentCart.items.forEach(cartItem => { const inventoryItem = inventory.find(item => (item.id === cartItem.id)); if (inventoryItem) { inventoryItem.quantity -= cartItem.quantity; } });
+            localStorage.setItem("inventory", JSON.stringify(inventory));
+
+            // Generate and show receipt (using generateReceipt(order) (which now prints "Delivery To" (and rider tip) lines only if order.delivery (and order.tip) is present))
+            const receipt = generateReceipt(order);
+            showReceiptModal(receipt);
+
+            // Clear cart
+            sessionStorage.removeItem("currentCart");
+        }
+
+        function generateReceipt(order) {
+            const receiptHeader = `
+╔════════════════════════════════╗
+║        McDonalds Receipt       ║
+╚════════════════════════════════╝
+
+`;
+            const receiptFooter = `
+════════════════════════════════
+    Thank you for choosing 
+       McDonalds Delivery!
+════════════════════════════════
+`;
+
+            let receipt = `${receiptHeader}Transaction ID: ${order.transactionId}
+Date: ${new Date(order.date).toLocaleString()}
+Staff: ${order.staff}
+
+`;
+            if (order.delivery) {
+                receipt += `Delivery To:
+${order.delivery.customerName}
+${order.delivery.phoneNumber}
+${order.delivery.address}${(order.delivery.landmark) ? (`\nLandmark: ${order.delivery.landmark}`) : ""}\n\n`;
+            }
+            receipt += `Items:\n`;
+            
+            // Display items with group meals
+            order.items.forEach(item => {
+                if (item.isGroupMeal) {
+                    receipt += `${item.name} x${item.quantity}\n`;
+                    receipt += `  @ ₱${item.price}  ₱${(item.price * item.quantity).toFixed(2)}\n`;
+                    if (item.addOns && item.addOns.length > 0) {
+                        item.addOns.forEach(addOn => {
+                            receipt += `  + ${addOn.name}\n`;
+                            receipt += `    @ ₱${addOn.price}  ₱${addOn.price.toFixed(2)}\n`;
+                        });
+                    }
+                } else {
+                    receipt += `${item.name}\n`;
+                    receipt += `  x${item.quantity} @ ₱${item.price}  ₱${(item.price * item.quantity).toFixed(2)}\n`;
+                }
+            });
+            
+            receipt += `\n────────────────────────────────\nSubtotal:     ₱${order.subtotal.toFixed(2)}\nVAT (12%):    ₱${order.tax.toFixed(2)}`;
+            if (order.tip) {
+                receipt += `\nRider Tip:    ₱${order.tip.toFixed(2)}`;
+            }
+            receipt += `\n────────────────────────────────\nTotal:        ₱${order.total.toFixed(2)}\n\nPayment Method: ${order.paymentMethod.toUpperCase()}\n${receiptFooter}`;
+            return receipt;
+        }
+
+        function goBack() {
+            window.location.href = 'PAGE2.html';
+        }
+    </script>
+</body>
+</html> 

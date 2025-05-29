@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern POS System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="page2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Remove duplicate header styles as they are now in styles.css */
+        .size-options {
+            display: flex;
+            gap: 8px;
+            margin: 8px 0;
+            justify-content: center;
+        }
+
+        .size-option {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 0.8em;
+            cursor: pointer;
+            background: white;
+            transition: all 0.2s;
+        }
+
+        .size-option:hover {
+            border-color: #DA291C;
+            color: #DA291C;
+        }
+
+        .size-option.selected {
+            background: #DA291C;
+            color: white;
+            border-color: #DA291C;
+        }
+
+        .size-option.disabled {
+            background: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+            border-color: #ddd;
+        }
+
+        /* Add styles for size modal */
+        .size-options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .size-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .size-option:hover {
+            border-color: #DA291C;
+            background-color: #fff5f5;
+        }
+
+        .size-option.selected {
+            border-color: #DA291C;
+            background-color: #fff5f5;
+        }
+
+        .size-label {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .size-price {
+            font-weight: bold;
+            color: #DA291C;
+        }
+
+        /* Add or update modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none; /* Will be set to flex when shown */
+        }
+
+        /* When modal is shown */
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Modal content container */
+        .modal > div {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Size modal specific styles */
+        #size-modal > div {
+            text-align: center;
+        }
+
+        #size-modal h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        /* Size options container */
+        .size-options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        .size-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .size-option:hover {
+            border-color: #DA291C;
+            background-color: #fff5f5;
+            transform: translateY(-2px);
+        }
+
+        .size-option.selected {
+            border-color: #DA291C;
+            background-color: #fff5f5;
+            box-shadow: 0 2px 8px rgba(218, 41, 28, 0.1);
+        }
+
+        .size-label {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        .size-price {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #DA291C;
+        }
+
+        /* Modal buttons */
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .modal button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1em;
+            transition: all 0.2s ease;
+            min-width: 120px;
+        }
+
+        .modal button:first-of-type {
+            background: #6c757d;
+            color: white;
+        }
+
+        .modal button:last-of-type {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .modal button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add styles for add-ons modal */
+        .add-ons-category {
+            margin-bottom: 20px;
+        }
+
+        .add-ons-category h3 {
+            color: #333;
+            margin: 15px 0 10px;
+            font-size: 1.2em;
+            text-transform: capitalize;
+        }
+
+        .category-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-left: 10px;
+        }
+
+        .add-on-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-on-option:hover {
+            background-color: #fff5f5;
+            border-color: #DA291C;
+            transform: translateY(-2px);
+        }
+
+        .add-on-option input[type="radio"] {
+            margin-right: 12px;
+        }
+
+        .add-on-option span {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        /* Add styles for the cart items */
+        .cart-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            gap: 10px;
+        }
+
+        .item-details {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .group-meal-badge {
+            font-size: 0.8em;
+            background: #DA291C;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+
+        .item-addons {
+            margin-left: 15px;
+            font-size: 0.9em;
+        }
+
+        .addon-item {
+            display: flex;
+            justify-content: space-between;
+            color: #666;
+            margin: 3px 0;
+        }
+
+        .addon-name {
+            color: #666;
+        }
+
+        .addon-price {
+            color: #DA291C;
+            font-weight: 500;
+        }
+
+        .item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .item-quantity button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .item-quantity button:hover {
+            background: #f5f5f5;
+            border-color: #DA291C;
+            color: #DA291C;
+        }
+
+        .item-quantity span {
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .item-price {
+            font-weight: bold;
+            color: #333;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .remove-item {
+            background: none;
+            border: none;
+            color: #999;
+            font-size: 1.2em;
+            cursor: pointer;
+            padding: 0 5px;
+        }
+
+        .remove-item:hover {
+            color: #DA291C;
+        }
+
+        /* Add new styles for better add-ons display */
+        .item-base-price {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px dashed #eee;
+        }
+
+        .item-addons {
+            margin: 8px 0 8px 15px;
+            font-size: 0.9em;
+            background: #f8f9fa;
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 3px solid #DA291C;
+        }
+
+        .addon-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+        }
+
+        .addon-name {
+            color: #333;
+        }
+
+        .addon-price {
+            color: #DA291C;
+            font-weight: 500;
+        }
+
+        .group-meal-badge {
+            font-size: 0.8em;
+            background: #DA291C;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        /* Add shadow styles for all item boxes */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 12px;
+            margin: 10px 0;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        .cart-item:hover {
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+        }
+
+        .item-addons {
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            margin: 8px 0 8px 15px;
+            padding: 12px;
+            border-left: 3px solid #DA291C;
+        }
+
+        .modal > div {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .size-option {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .size-option:hover {
+            box-shadow: 0 8px 20px rgba(218, 41, 28, 0.25);
+        }
+
+        .size-option.selected {
+            box-shadow: 0 8px 20px rgba(218, 41, 28, 0.3);
+        }
+
+        .add-on-option {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .add-on-option:hover {
+            box-shadow: 0 8px 20px rgba(218, 41, 28, 0.25);
+        }
+
+        .cart-section {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+        }
+
+        .cart-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .products-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-bar input {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .category-filter select {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .btn-add {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .btn-add:hover {
+            box-shadow: 0 8px 20px rgba(218, 41, 28, 0.3);
+        }
+
+        .payment-buttons button {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+        }
+
+        .payment-buttons button:hover {
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+        }
+
+        .delivery-options {
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            padding: 15px;
+            margin-top: 15px;
+        }
+
+        .group-meal-badge {
+            box-shadow: 0 4px 8px rgba(218, 41, 28, 0.3);
+        }
+
+        .item-quantity button {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            transition: all 0.2s ease;
+        }
+
+        .item-quantity button:hover {
+            box-shadow: 0 6px 12px rgba(218, 41, 28, 0.25);
+        }
+
+        /* Add shadow to the entire cart section container */
+        .pos-main {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            border-radius: 16px;
+            margin: 20px;
+            background: #f8f9fa;
+        }
+
+        /* Add shadow to the products grid */
+        .products-grid {
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            padding: 20px;
+            background: white;
+        }
+
+        /* Add shadow to the cart items container */
+        .cart-items {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+            border-radius: 8px;
+            padding: 10px;
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="pos-container">
+        <!-- Header Section -->
+        <header class="pos-header">
+            <div class="logo">
+                <img src="mcdonalds-logo.png" alt="McDonald's Logo" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/McDonald%27s_Golden_Arches.svg/1200px-McDonald%27s_Golden_Arches.svg.png'">
+                <h1>McDonald's</h1>
+            </div>
+            <div class="header-controls">
+                <button class="btn-secondary" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="pos-main">
+            <!-- Products Grid -->
+            <section class="products-section">
+                <h2 style="text-align: center; color: #DA291C; margin-bottom: 20px; font-size: 1.8em;">Order here</h2>
+                <div class="products-header">
+                    <div class="search-bar">
+                        <input type="text" placeholder="Search products...">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                    <div class="category-filter">
+                        <select>
+                            <option value="all">All Categories</option>
+                            <option value="food">Food</option>
+                            <option value="snacks">Sides</option>
+                            <option value="beverages">Drinks</option>
+                            <option value="desserts">Desserts</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="products-grid">
+                    <!-- Sample Products -->
+                    <div class="product-card">
+                        <img src="BURGER.png" alt="Product">
+                        <h3>Big Mac</h3>
+                        <p class="price">₱182</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="1pc-Chicken-McDo-with-Rice.webp" alt="Product">
+                        <h3>1pc Chicken McDo with Rice</h3>
+                        <p class="price">₱92</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Mcspaghetti-Solo.webp" alt="Product">
+                        <h3>Spaghetti</h3>
+                        <p class="price">₱122</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="images.jpg" alt="Product">
+                        <h3>Chicken Fillet Ala King</h3>
+                        <p class="price">₱89</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+
+                    <div class="product-card">
+                        <img src="Large-Fries-Mcdo.jpg" alt="Product">
+                        <h3>Fries</h3>
+                        <p class="price">₱109</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Apple-Pie.webp" alt="Product">
+                        <h3>Apple Pie</h3>
+                        <p class="price">₱45</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Coke-1.webp" alt="Product">
+                        <h3>Coke</h3>
+                        <p class="price">₱77</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Coke-McFloat.webp" alt="Product">
+                        <h3>Coke Mc Float</h3>
+                        <p class="price">₱59</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <div class="product-card">
+                        <img src="Vanilla-Sundae-Cone.webp" alt="Product">
+                        <h3>Vanilla Sundae Cone</h3>
+                        <p class="price">₱20</p>
+                        <p class="stock-info">Stock: <span class="stock-count">Loading...</span></p>
+                        <button class="btn-add">Add to Cart</button>
+                    </div>
+                    <!-- Add more product cards as needed -->
+                </div>
+            </section>
+
+            <!-- Cart Section -->
+            <section class="cart-section">
+                <div class="cart-header">
+                    <h2>On Tray</h2>
+                </div>
+                <div class="cart-items">
+                    <!-- Cart items will be dynamically added here -->
+                </div>
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span>$9.99</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (12%):</span>
+                        <span>$1.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total:</span>
+                        <span>$10.99</span>
+                    </div>
+                </div>
+
+                <!-- New delivery options section -->
+                <div class="delivery-options" style="margin-top: 15px; padding: 10px; border-top: 1px solid #eee;">
+                    <h3>Delivery Option</h3>
+                    <label style="display: block; margin: 5px 0;">
+                        <input type="radio" name="delivery" value="pickup" checked onchange="updateDeliveryOption(this.value);" /> Pick-up
+                    </label>
+                    <label style="display: block; margin: 5px 0;">
+                        <input type="radio" name="delivery" value="delivery" onchange="updateDeliveryOption(this.value);" /> Delivery
+                    </label>
+                </div>
+
+                <div class="payment-buttons">
+                    <button class="btn-cancel" onclick="cancelOrder()">Cancel Order</button>
+                    <button class="btn-checkout" onclick="proceedToCheckout()">Checkout</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="pos-footer">
+            <div class="footer-info">
+                <span>Date: <span id="current-date"></span></span>
+                <span>Transaction ID: <span id="current-transaction"></span></span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Add image modal -->
+    <div id="image-modal" class="image-modal" onclick="closeImageModal()">
+        <span class="close-modal">&times;</span>
+        <img id="modal-image" src="" alt="Product Image">
+    </div>
+
+    <!-- Add-ons modal -->
+    <div id="add-ons-modal" class="modal">
+        <div>
+            <h2>Add Add-ons for <span id="add-ons-food-name"></span></h2>
+            <p>Select add-ons from Sides, Drinks, and Desserts:</p>
+            <div id="add-ons-list">
+                <!-- Add-ons will be dynamically inserted here -->
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeAddOnsModal()">Cancel</button>
+                <button onclick="addAddOnsToCart()">Confirm Add-ons</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Size selection modal -->
+    <div id="size-modal" class="modal">
+        <div>
+            <h2>Select Size for <span id="size-food-name"></span></h2>
+            <div class="size-options-container">
+                <div class="size-option" onclick="selectSize('small')">
+                    <div class="size-label">Small</div>
+                    <div class="size-price" id="small-price">₱0</div>
+                </div>
+                <div class="size-option" onclick="selectSize('medium')">
+                    <div class="size-label">Medium</div>
+                    <div class="size-price" id="medium-price">₱0</div>
+                </div>
+                <div class="size-option" onclick="selectSize('large')">
+                    <div class="size-label">Large</div>
+                    <div class="size-price" id="large-price">₱0</div>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeSizeModal()">Cancel</button>
+                <button onclick="confirmSizeSelection()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        window.onload = function() {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            document.getElementById('current-date').textContent = new Date().toLocaleDateString();
+            document.getElementById('current-transaction').textContent = currentTransactionId;
+            loadInventory();
+        }
+
+        function logout() {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Load inventory from localStorage
+        let inventory = [];
+        function loadInventory() {
+            inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            // Load size prices from localStorage
+            const savedSizePrices = localStorage.getItem('sizePrices');
+            if (savedSizePrices) {
+                Object.assign(sizePrices, JSON.parse(savedSizePrices));
+            }
+            updateProductAvailability();
+            initializeProductCards();
+        }
+
+        function updateProductAvailability() {
+            document.querySelectorAll('.product-card').forEach((card, index) => {
+                const productName = card.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                const addButton = card.querySelector('.btn-add');
+                
+                if (inventoryItem && inventoryItem.quantity > 0) {
+                    addButton.disabled = false;
+                    addButton.textContent = 'Add to Cart';
+                } else {
+                    addButton.disabled = true;
+                    addButton.textContent = 'Out of Stock';
+                }
+            });
+        }
+
+        // Update the cart state to include group meals
+        let cart = [];
+        let currentTransactionId = generateTransactionId();
+
+        // Generate random transaction ID
+        function generateTransactionId() {
+            return 'TRX' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        }
+
+        // Update the event listeners for product cards
+        function initializeProductCards() {
+            document.querySelectorAll('.product-card').forEach(card => {
+                const addButton = card.querySelector('.btn-add');
+                const productName = card.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                
+                if (addButton && inventoryItem) {
+                    // Set the category based on the product name or other attributes
+                    if (!inventoryItem.category) {
+                        // Determine category based on product name or other logic
+                        if (['Burger', '1pc Chicken McDo with Rice', 'Spaghetti', 'Chicken Fillet Ala King'].includes(productName)) {
+                            inventoryItem.category = 'food';
+                        } else if (['Coke', 'Coke McFloat', 'Sprite', 'Sprite McFloat', 'Royal', 'Royal McFloat'].includes(productName)) {
+                            inventoryItem.category = 'beverages';
+                        } else if (['Fries', 'Apple Pie'].includes(productName)) {
+                            inventoryItem.category = 'snacks';
+                        } else {
+                            inventoryItem.category = 'desserts';
+                        }
+                    }
+
+                    // Update the price display if it's a size-based item
+                    const priceElement = card.querySelector('.price');
+                    if (priceElement) {
+                        if (inventoryItem.sizePrices || sizePrices[productName]) {
+                            const prices = inventoryItem.sizePrices || sizePrices[productName];
+                            priceElement.textContent = `₱${prices.small} - ₱${prices.large}`;
+                        } else {
+                            priceElement.textContent = `₱${inventoryItem.price.toFixed(2)}`;
+                        }
+                    }
+
+                    addButton.onclick = () => {
+                        if (inventoryItem.quantity > 0) {
+                            addToCart(inventoryItem);
+                        } else {
+                            alert('Sorry, this item is out of stock!');
+                        }
+                    };
+                }
+            });
+
+            // Save the updated inventory
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+        }
+
+        // Add these variables at the top of your script
+        let currentProduct = null;
+        let selectedSize = null;
+        let sizePrices = {
+            // Beverages
+            'Coke': { small: 35, medium: 45, large: 55, basePrice: 35 },
+            'Coke McFloat': { small: 45, medium: 55, large: 65, basePrice: 45 },
+            'Sprite': { small: 35, medium: 45, large: 55, basePrice: 35 },
+            'Sprite McFloat': { small: 45, medium: 55, large: 65, basePrice: 45 },
+            'Royal': { small: 35, medium: 45, large: 55, basePrice: 35 },
+            'Royal McFloat': { small: 45, medium: 55, large: 65, basePrice: 45 },
+            // Snacks
+            'Fries': { small: 59, medium: 79, large: 99, basePrice: 59 },
+            'Apple Pie': { small: 35, medium: 45, large: 55, basePrice: 35 }
+        };
+
+        // Modify the existing addToCart function
+        function addToCart(product) {
+            if (!product) return;
+
+            // Check if product is a beverage or snack that needs size selection
+            if (sizePrices[product.name] || 
+                (product.category && (product.category.toLowerCase() === 'beverages' || product.category.toLowerCase() === 'snacks'))) {
+                showSizeModal(product);
+                return;
+            }
+
+            // For food items, show add-ons modal
+            if (product.category && product.category.toLowerCase() === 'food') {
+                showAddOnsModal(product);
+                return;
+            }
+
+            // For other products (desserts), add directly to cart
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) {
+                if (product.quantity >= existingItem.quantity + 1) {
+                    existingItem.quantity++;
+                } else {
+                    alert('Sorry, not enough stock available!');
+                    return;
+                }
+            } else {
+                if (product.quantity >= 1) {
+                    cart.push({
+                        id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        quantity: 1,
+                        addOns: []
+                    });
+                } else {
+                    alert('Sorry, this item is out of stock!');
+                    return;
+                }
+            }
+            updateCartDisplay();
+            saveCart();
+        }
+
+        // Update the showSizeModal function to handle inventory
+        function showSizeModal(product) {
+            if (!product) return;
+            
+            currentProduct = product;
+            const modal = document.getElementById('size-modal');
+            const foodNameSpan = document.getElementById('size-food-name');
+            
+            foodNameSpan.textContent = product.name;
+            
+            // Get prices for each size
+            let prices;
+            if (product.sizePrices || sizePrices[product.name]) {
+                prices = product.sizePrices || sizePrices[product.name];
+            } else {
+                // For items without predefined size prices, calculate based on base price
+                const basePrice = product.price;
+                prices = {
+                    small: basePrice,
+                    medium: Math.round(basePrice * 1.3),
+                    large: Math.round(basePrice * 1.6),
+                    basePrice: basePrice
+                };
+            }
+            
+            // Set prices in the modal
+            document.getElementById('small-price').textContent = `₱${prices.small}`;
+            document.getElementById('medium-price').textContent = `₱${prices.medium}`;
+            document.getElementById('large-price').textContent = `₱${prices.large}`;
+            
+            modal.classList.add('show');
+            selectSize('small');
+        }
+
+        // Update the confirmSizeSelection function to handle inventory
+        function confirmSizeSelection() {
+            if (!currentProduct || !selectedSize) {
+                alert('Please select a size first');
+                return;
+            }
+            
+            const prices = currentProduct.sizePrices || sizePrices[currentProduct.name] || {
+                small: currentProduct.price,
+                medium: Math.round(currentProduct.price * 1.3),
+                large: Math.round(currentProduct.price * 1.6)
+            };
+            
+            const selectedPrice = prices[selectedSize];
+            
+            // Add to cart with size information
+            const cartItem = {
+                id: currentProduct.id,
+                name: currentProduct.name,
+                price: selectedPrice,
+                quantity: 1,
+                size: selectedSize,
+                addOns: [],
+                basePrice: prices.basePrice || currentProduct.price
+            };
+            
+            // Check if item with same size exists in cart
+            const existingItemIndex = cart.findIndex(item => 
+                item.id === currentProduct.id && item.size === selectedSize
+            );
+            
+            if (existingItemIndex > -1) {
+                if (currentProduct.quantity >= cart[existingItemIndex].quantity + 1) {
+                    cart[existingItemIndex].quantity++;
+                } else {
+                    alert('Sorry, not enough stock available!');
+                    closeSizeModal();
+                    return;
+                }
+            } else {
+                if (currentProduct.quantity >= 1) {
+                    cart.push(cartItem);
+                } else {
+                    alert('Sorry, this item is out of stock!');
+                    closeSizeModal();
+                    return;
+                }
+            }
+            
+            updateCartDisplay();
+            saveCart();
+            closeSizeModal();
+        }
+
+        // Add saveCart function
+        function saveCart() {
+            localStorage.setItem('currentCart', JSON.stringify(cart));
+        }
+
+        // Modify the updateCartDisplay function to show add-ons
+        function updateCartDisplay() {
+            const cartItems = document.querySelector('.cart-items');
+            cartItems.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                let addOnsTotal = 0;
+                const hasAddOns = item.addOns && item.addOns.length > 0;
+                if (hasAddOns) {
+                    addOnsTotal = item.addOns.reduce((sum, addOn) => sum + (addOn.price * addOn.quantity), 0);
+                }
+                const totalItemPrice = (itemTotal + addOnsTotal) * item.quantity;
+                subtotal += totalItemPrice;
+
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                
+                // Create the main item display with improved add-ons visibility
+                let itemHTML = `
+                    <div class="item-details">
+                        <div class="item-name">
+                            ${item.name}${item.size ? ` (${item.size})` : ''}
+                            ${hasAddOns ? ' <span class="group-meal-badge">Group Meal</span>' : ''}
+                        </div>
+                        ${hasAddOns ? `
+                            <div class="item-addons">
+                                ${item.addOns.map(addOn => `
+                                    <div class="addon-item">
+                                        <span class="addon-name">+ ${addOn.name}</span>
+                                        <span class="addon-price">₱${addOn.price.toFixed(2)}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+                        <div class="item-base-price">
+                            Base Price: ₱${item.price.toFixed(2)}
+                            ${hasAddOns ? ` + Add-ons: ₱${addOnsTotal.toFixed(2)}` : ''}
+                        </div>
+                    </div>
+                    <div class="item-quantity">
+                        <button onclick="updateQuantity(${index}, ${item.quantity - 1})">-</button>
+                        <span>${item.quantity}</span>
+                        <button onclick="updateQuantity(${index}, ${item.quantity + 1})">+</button>
+                    </div>
+                    <div class="item-price">₱${totalItemPrice.toFixed(2)}</div>
+                    <button class="remove-item" onclick="removeFromCart(${index})">×</button>
+                `;
+                
+                itemElement.innerHTML = itemHTML;
+                cartItems.appendChild(itemElement);
+            });
+
+            // Update cart summary
+            const tax = subtotal * 0.12;
+            const total = subtotal + tax;
+
+            document.querySelector('.summary-row:nth-child(1) span:last-child').textContent = `₱${subtotal.toFixed(2)}`;
+            document.querySelector('.summary-row:nth-child(2) span:last-child').textContent = `₱${tax.toFixed(2)}`;
+            document.querySelector('.summary-row.total span:last-child').textContent = `₱${total.toFixed(2)}`;
+        }
+
+        // Add updateQuantity function
+        function updateQuantity(index, newQuantity) {
+            if (newQuantity <= 0) {
+                removeFromCart(index);
+                return;
+            }
+
+            const item = cart[index];
+            const inventoryItem = inventory.find(i => i.id === item.id);
+            
+            if (inventoryItem && inventoryItem.quantity >= newQuantity) {
+                cart[index].quantity = newQuantity;
+                updateCartDisplay();
+                saveCart();
+            } else {
+                alert('Sorry, not enough stock available!');
+            }
+        }
+
+        // Add removeFromCart function
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartDisplay();
+            saveCart();
+        }
+
+        // Initialize search functionality
+        document.querySelector('.search-bar input').addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('.product-card').forEach((card) => {
+                const productName = card.querySelector('h3').textContent.toLowerCase();
+                card.style.display = productName.includes(searchTerm) ? 'block' : 'none';
+            });
+        });
+
+        // Initialize category filter
+        document.querySelector('.category-filter select').addEventListener('change', (e) => {
+            const category = e.target.value.toLowerCase();
+            if (category === 'all') {
+                document.querySelectorAll('.product-card').forEach(card => {
+                    card.style.display = 'block';
+                });
+                return;
+            }
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productName = card.querySelector('h3').textContent;
+                const inventoryItem = inventory.find(item => item.name === productName);
+                const shouldShow = inventoryItem && inventoryItem.category.toLowerCase() === category;
+                card.style.display = shouldShow ? 'block' : 'none';
+            });
+        });
+
+        // Update the stock display for all products
+        function updateStockDisplay() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            document.querySelectorAll('.product-card').forEach(card => {
+                const productName = card.querySelector('h3').textContent;
+                const stockSpan = card.querySelector('.stock-count');
+                const addButton = card.querySelector('.btn-add');
+                
+                const item = inventory.find(i => i.name === productName);
+                if (item) {
+                    stockSpan.textContent = item.quantity;
+                    if (item.quantity === 0) {
+                        stockSpan.className = 'stock-count out-of-stock';
+                        addButton.disabled = true;
+                        addButton.textContent = 'Out of Stock';
+                    } else if (item.quantity < 10) {
+                        stockSpan.className = 'stock-count low-stock';
+                        addButton.disabled = false;
+                        addButton.textContent = 'Add to Cart (Low Stock)';
+                    } else {
+                        stockSpan.className = 'stock-count';
+                        addButton.disabled = false;
+                        addButton.textContent = 'Add to Cart';
+                    }
+                } else {
+                    stockSpan.textContent = 'N/A';
+                    stockSpan.className = 'stock-count out-of-stock';
+                    addButton.disabled = true;
+                    addButton.textContent = 'Unavailable';
+                }
+            });
+        }
+
+        // Set up periodic stock refresh
+        setInterval(updateStockDisplay, 5000); // Refresh every 5 seconds
+
+        // Call updateStockDisplay when the page loads and after each cart operation
+        window.addEventListener('load', () => {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(currentUser);
+            document.getElementById('staff-name').textContent = user.username;
+            updateStockDisplay();
+        });
+
+        function handleImageError(img) {
+            img.onerror = null; // Prevent infinite loop
+            img.src = 'placeholder.png';
+        }
+
+        function showImageModal(imageSrc) {
+            if (!imageSrc || imageSrc.includes('placeholder.png')) return;
+            
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image');
+            modal.style.display = 'flex';
+            modalImg.src = imageSrc;
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+
+        // Update the updateProductDisplay function to handle size-based items
+        function updateProductDisplay() {
+            const inventory = JSON.parse(localStorage.getItem('inventory')) || [];
+            const productsGrid = document.querySelector('.products-grid');
+            productsGrid.innerHTML = '';
+
+            inventory.forEach(item => {
+                const productCard = document.createElement('div');
+                productCard.className = 'product-card';
+
+                // Determine price display based on whether item has sizes
+                let priceDisplay;
+                if (item.sizePrices || sizePrices[item.name]) {
+                    const prices = item.sizePrices || sizePrices[item.name];
+                    priceDisplay = `₱${prices.small} - ₱${prices.large}`;
+                } else {
+                    priceDisplay = `₱${item.price.toFixed(2)}`;
+                }
+
+                productCard.innerHTML = `
+                    ${item.image ? 
+                        `<img src="${item.image}" 
+                             alt="${item.name}" 
+                             onerror="handleImageError(this)"
+                             onclick="showImageModal('${item.image}')"
+                             style="cursor: pointer;">` :
+                        `<div class="image-placeholder">
+                            <i class="fas fa-image"></i>
+                        </div>`
+                    }
+                    <h3>${item.name}</h3>
+                    <p class="price">${priceDisplay}</p>
+                    <p class="stock-info">Stock: <span class="stock-count">${item.quantity}</span></p>
+                    <button class="btn-add" ${item.quantity <= 0 ? 'disabled' : ''}>
+                        ${item.quantity <= 0 ? 'Out of Stock' : 'Add to Cart'}
+                    </button>
+                `;
+
+                const addButton = productCard.querySelector('.btn-add');
+                if (addButton) {
+                    addButton.onclick = () => {
+                        if (item.quantity > 0) {
+                            addToCart(item);
+                        } else {
+                            alert('Sorry, this item is out of stock!');
+                        }
+                    };
+                }
+
+                productsGrid.appendChild(productCard);
+            });
+
+            updateStockDisplay();
+        }
+
+        // Call updateProductDisplay when the page loads
+        window.addEventListener('load', () => {
+            const currentUser = sessionStorage.getItem('currentUser');
+            if (!currentUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+            const user = JSON.parse(currentUser);
+            document.getElementById('staff-name').textContent = user.username;
+            updateProductDisplay();
+        });
+
+        // Set up periodic refresh
+        setInterval(() => {
+            updateProductDisplay();
+        }, 5000);
+
+        function cancelOrder() {
+            if (cart.length > 0) {
+                if (confirm('Are you sure you want to cancel this order? All items will be removed.')) {
+                    cart = [];
+                    updateCartDisplay();
+                }
+            }
+        }
+
+        // New global variable to hold the delivery option (default is "pickup")
+        let deliveryOption = "pickup";
+
+        // New function to update the delivery option
+        function updateDeliveryOption(option) {
+            deliveryOption = option;
+        }
+
+        // Update proceedToCheckout to include add-on prices
+        function proceedToCheckout() {
+            if (cart.length === 0) {
+                alert("Please add items to cart before proceeding to checkout.");
+                return;
+            }
+            
+            // Calculate subtotal including add-on prices
+            const subtotal = cart.reduce((sum, item) => {
+                let itemTotal = item.price;
+                if (item.isGroupMeal && item.addOns) {
+                    itemTotal += item.addOns.reduce((addOnSum, addOn) => addOnSum + addOn.price, 0);
+                }
+                return sum + (itemTotal * item.quantity);
+            }, 0);
+            
+            // Store cart data with updated prices
+            let cartData = {
+                items: cart,
+                subtotal: subtotal,
+                tax: subtotal * 0.12,
+                transactionId: currentTransactionId,
+                deliveryOption: deliveryOption
+            };
+            
+            if (deliveryOption === "delivery") {
+                cartData.address = "";
+                cartData.tip = 0;
+            }
+            
+            sessionStorage.setItem("currentCart", JSON.stringify(cartData));
+            window.location.href = "checkout.html";
+        }
+
+        // Close modal when clicking outside the image
+        document.getElementById('image-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeImageModal();
+            }
+        });
+
+        // New variable to hold the food item (for add-ons)
+        let currentFoodItem = null;
+
+        // Update showAddOnsModal function to use the show class
+        function showAddOnsModal(foodItem) {
+            currentFoodItem = foodItem;
+            const modal = document.getElementById("add-ons-modal");
+            const foodNameSpan = document.getElementById("add-ons-food-name");
+            foodNameSpan.textContent = foodItem.name;
+            const addOnsList = document.getElementById("add-ons-list");
+            addOnsList.innerHTML = "";
+
+            // Group add-ons by category
+            const addOnsByCategory = {
+                beverages: inventory.filter(item => item.category === "beverages" && item.quantity > 0),
+                snacks: inventory.filter(item => item.category === "snacks" && item.quantity > 0),
+                desserts: inventory.filter(item => item.category === "desserts" && item.quantity > 0)
+            };
+
+            // Create sections for each category
+            Object.entries(addOnsByCategory).forEach(([category, items]) => {
+                const categoryDiv = document.createElement("div");
+                categoryDiv.className = "add-ons-category";
+                categoryDiv.innerHTML = `
+                    <h3>${category.charAt(0).toUpperCase() + category.slice(1)}</h3>
+                    <div class="category-items">
+                        <label class="add-on-option">
+                            <input type="radio" 
+                                   name="${category}" 
+                                   value="none"
+                                   checked />
+                            <span>None (No ${category})</span>
+                        </label>
+                        ${items.map(item => `
+                            <label class="add-on-option">
+                                <input type="radio" 
+                                       name="${category}" 
+                                       data-id="${item.id}" 
+                                       data-name="${item.name}" 
+                                       data-price="${item.price}" 
+                                       data-category="${category}" />
+                                <span>${item.name} (₱${item.price.toFixed(2)})</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                addOnsList.appendChild(categoryDiv);
+            });
+
+            modal.classList.add('show');
+        }
+
+        // Update closeAddOnsModal function to use the show class
+        function closeAddOnsModal() {
+            const modal = document.getElementById("add-ons-modal");
+            modal.classList.remove('show');
+            currentFoodItem = null;
+        }
+
+        // Update the addAddOnsToCart function
+        function addAddOnsToCart() {
+            if (!currentFoodItem) return;
+            
+            // Create a group meal object
+            const groupMeal = {
+                id: currentFoodItem.id,
+                name: currentFoodItem.name,
+                price: currentFoodItem.price,
+                quantity: 1,
+                category: 'food',
+                isGroupMeal: true,
+                addOns: []
+            };
+
+            // Get selected add-ons from each category
+            const categories = ['beverages', 'snacks', 'desserts'];
+
+            categories.forEach(category => {
+                const selectedAddOn = document.querySelector(`input[name="${category}"]:checked`);
+                if (selectedAddOn && selectedAddOn.value !== 'none') {
+                    const addOnId = parseInt(selectedAddOn.getAttribute("data-id"));
+                    const addOnName = selectedAddOn.getAttribute("data-name");
+                    const addOnPrice = parseFloat(selectedAddOn.getAttribute("data-price"));
+                    const addOnItem = inventory.find(item => item.id === addOnId);
+                    
+                    if (addOnItem && addOnItem.quantity > 0) {
+                        groupMeal.addOns.push({
+                            id: addOnId,
+                            name: addOnName,
+                            price: addOnPrice,
+                            quantity: 1,
+                            category: category
+                        });
+                    } else {
+                        alert(`Sorry, add-on ${addOnName} is out of stock!`);
+                        return;
+                    }
+                }
+            });
+
+            // Check if we already have this exact group meal in the cart
+            const existingGroupMealIndex = cart.findIndex(item => 
+                item.isGroupMeal && 
+                item.id === groupMeal.id && 
+                JSON.stringify(item.addOns.sort((a, b) => a.id - b.id)) === 
+                JSON.stringify(groupMeal.addOns.sort((a, b) => a.id - b.id))
+            );
+
+            if (existingGroupMealIndex > -1) {
+                // If we found an existing group meal with the same add-ons
+                if (currentFoodItem.quantity >= cart[existingGroupMealIndex].quantity + 1) {
+                    cart[existingGroupMealIndex].quantity += 1;
+                } else {
+                    alert("Sorry, not enough stock available for " + currentFoodItem.name + "!");
+                    closeAddOnsModal();
+                    return;
+                }
+            } else {
+                // Add as a new group meal
+                if (currentFoodItem.quantity >= 1) {
+                    cart.push(groupMeal);
+                } else {
+                    alert("Sorry, " + currentFoodItem.name + " is out of stock!");
+                    closeAddOnsModal();
+                    return;
+                }
+            }
+
+            // Update inventory for add-ons
+            groupMeal.addOns.forEach(addOn => {
+                const inventoryItem = inventory.find(item => item.id === addOn.id);
+                if (inventoryItem) {
+                    inventoryItem.quantity -= addOn.quantity;
+                }
+            });
+
+            // Update inventory for main item
+            const mainItem = inventory.find(item => item.id === currentFoodItem.id);
+            if (mainItem) {
+                mainItem.quantity -= 1;
+            }
+
+            // Save updated inventory
+            localStorage.setItem('inventory', JSON.stringify(inventory));
+
+            closeAddOnsModal();
+            updateCartDisplay();
+            saveCart();
+            updateStockDisplay();
+        }
+
+        // Add back the helper functions for size selection
+        function selectSize(size) {
+            selectedSize = size;
+            // Remove selected class from all options
+            document.querySelectorAll('.size-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            // Add selected class to clicked option
+            event.currentTarget.classList.add('selected');
+        }
+
+        // Update the closeSizeModal function to remove the show class
+        function closeSizeModal() {
+            const modal = document.getElementById('size-modal');
+            modal.classList.remove('show');
+            currentProduct = null;
+            selectedSize = null;
+        }
+    </script>
+</body>
+</html> 
